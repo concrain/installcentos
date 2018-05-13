@@ -5,38 +5,49 @@ Install RedHat OpenShift Origin in your development box.
 1. Create a VM as explained in https://youtu.be/aqXSbDZggK4 (this video) by Grant Shipley
 
 2. Define mandatory variables for the installation process
+sh prepare-server.sh
 
-```
-# Domain name to access the cluster
-$ export DOMAIN=<public ip addres>.nip.io 
+3. run install script
+curl https://raw.githubusercontent.com/concrain/installcentos/master/install-openshift.sh | /bin/bash
 
-# User created after installation
-$ export USERNAME=<current user name>
+4. login to server
+oc login -u ${USERNAME} -p ${PASSWORD} https://console.$DOMAIN:$API_PORT/
 
-# Password for the user
-$ export PASSWORD=password
-```
+5. set router
+[ netgear C7000v2 ]
+	portforward
+	netgear C7000v2
+	http://192.168.0.2/
+	Advanced > Advanced Setup > Port Forwarding / Port Triggering > Add Custom Service
+		->
+		service-name=<domain-name>
+		ipaddress=<server-static-ip>
+		port-range=80
 
-3. Define optional variables for the installation process
+		service-name=<domain-name>
+		ipaddress=<server-static-ip>
+		port-range=443
 
-```
-# Instead of using loopback, setup DeviceMapper on this disk.
-# !! All data on the disk will be wiped out !!
-$ export DISK="/dev/sda"
-```
+		service-name=<domain-name>
+		ipaddress=<server-static-ip>
+		port-range=8443		
+		<-
 
-3. Run the automagic installation script as root:
+6. verify ports are working:
+	https://ifconfig.co/
+	https://ifconfig.co/json
+	->
+	{
+	  "ip": "73.15.12.167",
+	  "ip_decimal": 1225723047,
+	  "country": "United States",
+	  "country_iso": "US",
+	  "city": "San Jose",
+	  "hostname": "c-73-15-12-167.hsd1.ca.comcast.net"
+	}
+	<-
+	https://www.gandi.net/en/dashboard/dns
+		# your ipaddress should match
 
-```
-curl https://raw.githubusercontent.com/gshipley/installcentos/master/install-openshift.sh | /bin/bash
-```
-
-## Development
-
-For development it's possible to switch the script repo
-
-```
-# Change location of source repository
-$ export SCRIPT_REPO="https://raw.githubusercontent.com/gshipley/installcentos/master"
-$ curl $SCRIPT_REPO/install-openshift.sh | /bin/bash
-```
+7. verify external access:
+https://console.concrain.io
